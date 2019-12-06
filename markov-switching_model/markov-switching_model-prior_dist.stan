@@ -19,6 +19,11 @@ model{
 
     real denom;
     real likelihood;
+    
+    const0~normal(0, 1);
+    const1~normal(0, 1);
+    sigma2_0~inv_gamma(0.01/2, 0.01/2);
+    sigma2_1~inv_gamma(0.01/2, 0.01/2);
 
     past_probs[1] = (1-prob1)/(2-prob0-prob1);
     past_probs[2] = (1-prob0)/(2-prob0-prob1);
