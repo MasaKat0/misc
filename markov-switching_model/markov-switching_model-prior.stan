@@ -27,29 +27,25 @@ model{
     sigma[2]~inv_gamma(0.01/2, 0.01/2);
 
     prob_matrix[1, 1] = ps[1]; 
-    prob_matrix[1, 2] = 1-ps[1]; 
-    prob_matrix[2, 1] = 1-ps[2]; 
+    prob_matrix[1, 2] = 1-ps[2]; 
+    prob_matrix[2, 1] = 1-ps[1]; 
     prob_matrix[2, 2] = ps[2]; 
     
-    past_probs[1] = ps[1];
-    past_probs[2] = 1-ps[1];
+    past_probs[1] = (1-ps[2])/(2-ps[1]-ps[2]);
+    past_probs[2] = (1-ps[1])/(2-ps[1]-ps[2]);
 
     for (t in 1:T){
-        count = 1;
         for (k in 1 : k_regimes){
             y = consts[k];
-            y = exp(-square(Y[t]-y)/(2*sigma[k]))/sqrt(2*pi()*sigma[k]);
-            temp_list[count] = y;
-            count += 1;
-        }
-
-        for (k in 1 : k_regimes){
+            y = (exp(-square(Y[t]-y)/(2*sigma[k]))/sqrt(2*pi()*sigma[k]))*past_probs[k];
+            temp_list[k] = y;
+            
             if (k == 1){
                 denom = temp_list[k];
-                likelihood = temp_list[k]*past_probs[k];
+                likelihood = temp_list[k];
             } else {
                 denom ＋= temp_list[k];
-                likelihood += temp_list[k]*past_probs[k];
+                likelihood += temp_list[k];
             }
         }
 
